@@ -1,5 +1,8 @@
 {
   "dependencies": {
     "discord.js": "^14.25.1"
+  },
+  "scripts": {
+    "start": "node main.js | tee stdout.log"
   }
 }
