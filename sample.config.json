@@ -1,0 +1,13 @@
+{
+    "discord": {
+        "token": "[discord bot token]",
+        "clientId": "[discord app id]"
+    },
+    "pushover": {
+        "token": "[pushover app token]",
+        "user": "[pushover user key]",
+        "device": "[pushover device(s) to send notifications to]"
+    },
+    "greet_msg": "[message to send in response to /greet]",
+    "response_msg": "[message to send in response to dms]"
+}
