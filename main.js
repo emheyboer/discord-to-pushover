@@ -9,7 +9,7 @@ const client = new discord.Client({
 });
 
 client.once(discord.Events.ClientReady, (readyClient) => {
-    console.log(`Logged in as ${readyClient.user.tag}`);
+    console.log(`Logged in as ${JSON.stringify(readyClient.user.tag)}`);
 });
 
 client.on(discord.Events.InteractionCreate, (interaction) => {
@@ -18,7 +18,7 @@ client.on(discord.Events.InteractionCreate, (interaction) => {
     if (command == 'greet') {
         interaction.reply(config.greet_msg);
         const author = interaction?.member?.user;
-        console.log(`greeted ${author?.global_name} (@${author?.username})`);
+        console.log('greeted', JSON.stringify(`${author?.global_name} (@${author?.username})`));
     }
 });
 
@@ -36,8 +36,8 @@ client.on('messageCreate', (message) => {
     sendNotification({title, message: body});
     console.log(`\
 ${'='.repeat(60)}
-${title}
-${body}
+${JSON.stringify(title)}
+${JSON.stringify(body)}
 ${'='.repeat(60)}`);
 
     if (config.response_msg) {
