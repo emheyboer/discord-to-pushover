@@ -2,18 +2,18 @@ const discord = require('discord.js');
 const config = require('./config.json');
 
 const client = new discord.Client({
-  intents: [
+    intents: [
     discord.GatewayIntentBits.DirectMessages,
-  ],
-  partials: [discord.Partials.Channel],
+    ],
+    partials: [discord.Partials.Channel],
 });
 
 client.once(discord.Events.ClientReady, (readyClient) => {
-	console.log(`Logged in as ${readyClient.user.tag}`);
+    console.log(`Logged in as ${readyClient.user.tag}`);
 });
 
 client.on(discord.Events.InteractionCreate, (interaction) => {
-	if (!interaction.isChatInputCommand()) return; 
+    if (!interaction.isChatInputCommand()) return; 
     const command = interaction.commandName;
     if (command == 'greet') {
         interaction.reply(config.greet_msg);
@@ -23,17 +23,21 @@ client.on(discord.Events.InteractionCreate, (interaction) => {
 });
 
 client.on('messageCreate', (message) => {
-  if (message.channel.type !== discord.ChannelType.DM || message.author.bot) 
-    return;
+    if (message.channel.type !== discord.ChannelType.DM || message.author.bot) return;
 
-  console.log(JSON.stringify(message, null, 2));
-  const title = `${message.author.globalName} (@${message.author.username})`;
-  const body = message.content;
-  sendNotification({title, message: body});
-  console.log(`\
+    console.log(JSON.stringify(message, null, 2));
+    const title = `${message.author.globalName} (@${message.author.username})`;
+    let body = message.content;
+
+    message.attachments.each(attach => {
+        body += `<img src="${attach.url}">`;
+    })
+
+    sendNotification({title, message: body});
+    console.log(`\
 ${'='.repeat(60)}
 ${title}
-${message.content}
+${body}
 ${'='.repeat(60)}`);
 
     if (config.response_msg) {
@@ -48,6 +52,7 @@ function sendNotification(parameters) {
             token: config.pushover.token,
             user: config.pushover.user,
             device: config.pushover.device,
+            html: 1,
             ...parameters
         }),
     });
