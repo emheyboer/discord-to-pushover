@@ -38,7 +38,7 @@ client.on('messageCreate', (message) => {
 
     console.log(JSON.stringify(message, null, 2));
     const title = `${message.author.globalName} (@${message.author.username})`;
-    let body = message.content;
+    let body = message.cleanContent;
 
     message.attachments.each(attach => {
         body += `<img src="${attach.url}">`;
