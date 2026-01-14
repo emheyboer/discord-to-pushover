@@ -72,7 +72,20 @@ function format(message) {
     , message.cleanContent);
 
     message.attachments.each(attach => {
-        html += `<img src="${attach.url}">`;
+        const [type, _subtype] = attach.contentType.split('/');
+        switch (type) {
+            case 'image':
+                html += `<img src="${attach.url}">`;
+                break;
+            case 'video':
+                html += `<video src="${attach.url}"></video>`;
+                break;
+            case 'audio':
+                html += `<audio src="${attach.url}"></audio>`;
+                break;
+            default:
+                html += `<object type="${attach.contentType}" data="${attach.url}"></object>`;
+        }
     });
 
     return html;
