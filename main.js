@@ -38,11 +38,7 @@ client.on('messageCreate', (message) => {
 
     console.log(JSON.stringify(message, null, 2));
     const title = `${message.author.globalName} (@${message.author.username})`;
-    let body = message.cleanContent;
-
-    message.attachments.each(attach => {
-        body += `<img src="${attach.url}">`;
-    })
+    const body = format(message);
 
     sendNotification({title, message: body});
     console.log(`\
@@ -55,6 +51,32 @@ ${'='.repeat(60)}`);
         message.channel.send(config.response_msg);
     }
 });
+
+function format(message) {
+    const patterns = [
+        [/\*{3}(.+?)\*{3}/gm, '<i><b>$1</b></i>'],
+        [/\*{2}(.+?)\*{2}/gm, '<b>$1</b>'],
+        [/\*(.+?)\*/gm, '<i>$1</i>'],
+        [/_{2}(.+?)_{2}/gm, '<u>$1</u>'],
+        [/~{2}(.+?)~{2}/gm, '<strike>$1</strike>'],
+        [/\|{2}(.+?)\|{2}/gm, '<mark>$1</mark>'],
+        [/^# (.+)$/gm, '<h1>$1</h1>'],
+        [/^#{2} (.+)$/gm, '<h2>$1</h2>'],
+        [/^#{3} (.+)$/gm, '<h3>$1</h3>'],
+        [/^-# (.+)$/gm, '<small>$1</small>'],
+        [/\[(.+)\]\((.+)\)/gm, '<a href="$2">$1</a>'],
+        [/^> (.+)$/gm, '<q>$1</q>'],
+    ];
+    let html = patterns.reduce((string, [pattern, substitution]) =>
+        string.replaceAll(pattern, substitution)
+    , message.cleanContent);
+
+    message.attachments.each(attach => {
+        html += `<img src="${attach.url}">`;
+    });
+
+    return html;
+}
 
 async function sendNotification(parameters) {
     const response = await fetch('https://api.pushover.net/1/messages.json', {
