@@ -40,6 +40,8 @@ client.on('messageCreate', (message) => {
     const title = `${message.author.globalName} (@${message.author.username})`;
     const body = format(message);
 
+    if (!body) return;
+
     sendNotification({title, message: body});
     console.log(`\
 ${'='.repeat(60)}
