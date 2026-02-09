@@ -73,6 +73,11 @@ function format(message) {
         string.replaceAll(pattern, substitution)
     , message.cleanContent);
 
+    try {
+        const url = new URL(html);
+        html = `<a href="${url.href}"></a>`;
+    } catch (_) {}
+
     message.attachments.each(attach => {
         const [type, _subtype] = attach.contentType.split('/');
         switch (type) {
