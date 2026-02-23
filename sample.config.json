@@ -9,5 +9,6 @@
         "device": "[pushover device(s) to send notifications to]"
     },
     "greet_msg": "[message to send in response to /greet]",
-    "response_msg": "[message to send in response to dms]"
+    "response_msg": "[message to send in response to dms]",
+    "image_callback": "[command to call on the first image of each message]"
 }

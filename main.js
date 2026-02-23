@@ -1,5 +1,6 @@
 const discord = require('discord.js');
 const config = require('./config.json');
+const { spawn } = require('child_process');
 
 const stats = {};
 
@@ -51,6 +52,11 @@ ${'='.repeat(60)}`);
 
     if (config.response_msg) {
         message.channel.send(config.response_msg);
+    }
+
+    const img = message.attachments.find(attach => attach.contentType.startsWith('image/'));
+    if (img && config.image_callback) {
+        spawn(config.image_callback, [img.url]);
     }
 });
 
