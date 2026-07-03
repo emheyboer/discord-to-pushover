@@ -2,8 +2,6 @@ const discord = require('discord.js');
 const config = require('./config.json');
 const { spawn } = require('child_process');
 
-const stats = {};
-
 const client = new discord.Client({
     intents: [
     discord.GatewayIntentBits.DirectMessages,
@@ -23,13 +21,6 @@ client.on(discord.Events.InteractionCreate, async (interaction) => {
         case 'greet':
             interaction.reply(config.greet_msg);
             console.log('greeted', JSON.stringify(`${author?.global_name} (@${author?.username})`));
-            break;
-        case 'stats':
-            if (!stats['sent']) {
-                await getStats();
-            }
-            interaction.reply(`i've received ${stats['sent'].toLocaleString()} messages this month`);
-            console.log('sent stats to', JSON.stringify(`${author?.global_name} (@${author?.username})`));
             break;
     }
 });
@@ -121,14 +112,7 @@ async function sendNotification(parameters) {
     const http_status = response.status;
     const json_status = json.status;
     const success = http_status == 200 && json_status == 1;
-    if (success) {
-        const headers = response.headers;
-        stats['limit'] = Number(headers['x-limit-app-limit']);
-        stats['remaining'] = Number(headers['x-limit-app-remaining']);
-        stats['reset'] = new Date(Number(headers['x-limit-app-reset']) * 1000);
-        stats['sent'] = stats['limit'] - stats['remaining'];
-        return;
-    } 
+    if (success) return;
     
     console.error(JSON.stringify(json, null, 2));
     if (http_status >= 400 && http_status < 500) {
@@ -139,16 +123,6 @@ async function sendNotification(parameters) {
     }
 }
 
-async function getStats() {
-    const response = await fetch(`https://api.pushover.net/1/apps/limits.json?token=${config.pushover.token}`);
-    const json = await response.json();
-
-    stats['limit'] = json['limit'];
-    stats['remaining'] = json['remaining'];
-    stats['reset'] = json['reset'];
-    stats['sent'] = stats['limit'] - stats['remaining'];
-}
-
 const rest = new discord.REST().setToken(config.discord.token);
 const commands = [
     new discord.SlashCommandBuilder().setName('greet').setDescription('says hi')
@@ -157,12 +131,6 @@ const commands = [
             discord.InteractionContextType.BotDM,
             discord.InteractionContextType.Guild
         ),
-    new discord.SlashCommandBuilder().setName('stats').setDescription('shows some stats')
-    .setContexts(
-        discord.InteractionContextType.PrivateChannel,
-        discord.InteractionContextType.BotDM,
-        discord.InteractionContextType.Guild
-    ),
 ];
 
 rest.put(discord.Routes.applicationCommands(config.discord.clientId), { body: commands });
