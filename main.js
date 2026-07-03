@@ -96,7 +96,7 @@ function format(message) {
 }
 
 async function sendNotification(parameters) {
-    const response = await fetch('https://api.pushover.net/1/messages.json', {
+    const response = await fetch(config.pushover.url, {
         method: 'post',
         body: new URLSearchParams({
             token: config.pushover.token,

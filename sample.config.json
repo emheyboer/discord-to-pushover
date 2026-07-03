@@ -4,6 +4,7 @@
         "clientId": "[discord app id]"
     },
     "pushover": {
+        "url": "https://api.pushover.net/1/messages.json",
         "token": "[pushover app token]",
         "user": "[pushover user key]",
         "device": "[pushover device(s) to send notifications to]"
